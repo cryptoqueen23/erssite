@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Case Study: Party-N-Jump — ERS Accessibility &amp; UX Upgrade | Phoenix Securitas Tech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14181F;
+    --muted:#666E7C;
+    --paper:#F7F7F5;
+    --white:#FFFFFF;
+    --line:#E6E6E2;
+    --amber:#E39A3B;
+    --amber-deep:#C97F24;
+    --teal:#1E6F72;
+    --teal-deep:#155255;
+    --red:#B8402F;
+    --green:#217049;
+    --radius-lg:28px;
+    --radius-md:18px;
+    --radius-sm:12px;
+    --shadow-soft:0 20px 60px rgba(20,24,31,0.08);
+    --shadow-card:0 10px 30px rgba(20,24,31,0.06);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; font-family:'Inter', sans-serif; color:var(--ink); background:var(--paper); -webkit-font-smoothing:antialiased; line-height:1.6;}
+  h1,h2,h3,.display{font-family:'Manrope', sans-serif; font-weight:800; line-height:1.1; letter-spacing:-0.02em; margin:0;}
+  a{color:inherit;}
+  img{max-width:100%; display:block;}
+  :focus-visible{outline:3px solid var(--teal); outline-offset:3px;}
+  footer :focus-visible{outline-color:var(--amber);}
+
+  .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;}
+  .skip-link{position:absolute; left:16px; top:-60px; background:var(--amber); color:var(--ink); font-weight:700; padding:12px 20px; border-radius:0 0 10px 10px; text-decoration:none; z-index:200; transition:top .15s ease;}
+  .skip-link:focus{top:0;}
+  section[id], main{scroll-margin-top:88px;}
+
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
+  .eyebrow{font-family:'JetBrains Mono', monospace; font-size:0.74rem; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--teal-deep); display:inline-block; margin-bottom:14px;}
+
+  header{background:rgba(255,255,255,0.92); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); position:sticky; top:0; z-index:80;}
+  .header-inner{display:flex; align-items:center; justify-content:space-between; padding:18px 32px; max-width:1180px; margin:0 auto; gap:20px;}
+  .logo{display:flex; align-items:center; gap:10px; font-family:'Manrope'; font-weight:800; font-size:1.05rem; text-decoration:none; color:var(--ink);}
+  .logo-mark{width:30px; height:30px; border-radius:9px; background:linear-gradient(135deg, var(--amber), var(--teal));}
+  .btn{display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:0.92rem; padding:12px 24px; border-radius:100px; border:1.5px solid transparent; text-decoration:none; white-space:nowrap; transition:transform .15s ease;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-amber{background:var(--amber); color:var(--ink); box-shadow:0 10px 26px rgba(227,154,59,0.32);}
+  .btn-outline{background:transparent; color:var(--ink); border-color:var(--line);}
+  .btn-outline:hover{border-color:var(--ink);}
+  .btn-outline-light{background:transparent; color:var(--white); border-color:rgba(255,255,255,0.4);}
+
+  /* ---------- hero ---------- */
+  .hero{padding:90px 32px 70px; text-align:center;}
+  .hero .wrap{max-width:840px;}
+  .hero .client-tag{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--white); border:1px solid var(--line); border-radius:100px;
+    padding:8px 16px 8px 8px; font-size:0.86rem; font-weight:600; margin-bottom:28px;
+  }
+  .client-tag .dot{width:10px; height:10px; border-radius:50%; background:var(--teal-deep);}
+  .hero h1{font-size:clamp(2rem, 4.6vw, 3.1rem); max-width:20ch; margin:0 auto;}
+  .hero .short-version{
+    font-family:'JetBrains Mono', monospace; font-size:0.9rem; color:var(--teal-deep);
+    margin-top:18px;
+  }
+  .hero p.lede{font-size:1.08rem; color:var(--muted); max-width:56ch; margin:22px auto 0;}
+
+  section{padding:96px 32px;}
+  .section-head{max-width:680px; margin:0 auto 56px;}
+  .section-head h2{font-size:clamp(1.7rem,3vw,2.3rem);}
+  .section-head p{color:var(--muted); margin-top:14px; font-size:1rem;}
+  .audit-note{font-size:0.84rem; color:var(--muted); font-style:italic; max-width:680px; margin:0 auto 40px;}
+
+  /* ---------- browser frame graphics ---------- */
+  .compare-grid{display:grid; grid-template-columns:1fr 1fr; gap:32px; max-width:1180px; margin:0 auto 56px;}
+  .browser-frame{
+    border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--line);
+    background:var(--white); box-shadow:var(--shadow-card);
+  }
+  .browser-chrome{
+    display:flex; align-items:center; gap:6px; padding:12px 16px;
+    background:#EDEDEA; border-bottom:1px solid var(--line);
+  }
+  .browser-chrome .dot{width:9px; height:9px; border-radius:50%; background:#D5D5D0;}
+  .frame-label{
+    text-align:center; font-family:'JetBrains Mono', monospace; font-size:0.78rem;
+    font-weight:500; letter-spacing:0.06em; text-transform:uppercase; padding:14px 0 4px;
+  }
+  .frame-label.before{color:var(--red);}
+  .frame-label.after{color:var(--green);}
+
+  /* before: cluttered wireframe recreation */
+  .before-body{padding:16px; background:#FAFAF8; min-height:360px;}
+  .before-row-dup{display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px dashed #DADAD5; font-size:0.68rem; color:#9A9A94;}
+  .before-links{display:flex; flex-wrap:wrap; gap:6px; padding:12px 0; border-bottom:1px dashed #DADAD5;}
+  .before-links span{background:#EDEDE8; color:#8A8A84; font-size:0.62rem; padding:4px 8px; border-radius:4px;}
+  .before-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:14px 0;}
+  .before-grid div{background:#E4E4DF; height:44px; border-radius:3px; position:relative;}
+  .before-grid div::after{content:""; position:absolute; bottom:-6px; left:0; width:70%; height:5px; background:#D2D2CC; border-radius:2px;}
+  .issue-tag{
+    position:absolute; background:var(--red); color:var(--white);
+    font-family:'JetBrains Mono'; font-size:0.62rem; font-weight:600;
+    width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  }
+  .before-body{position:relative;}
+
+  /* after: clean poster preview */
+  .after-body{position:relative; min-height:360px; overflow:hidden;}
+  .after-body img{width:100%; height:100%; object-fit:cover;}
+  .after-scrim{position:absolute; inset:0; background:linear-gradient(180deg, rgba(20,24,31,0.1) 0%, rgba(20,24,31,0.82) 100%);}
+  .after-overlay{position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; padding:22px; color:var(--white);}
+  .after-overlay .tag{font-family:'JetBrains Mono'; font-size:0.68rem; background:rgba(255,255,255,0.15); backdrop-filter:blur(6px); display:inline-block; padding:4px 10px; border-radius:100px; margin-bottom:10px; width:fit-content;}
+  .after-overlay h4{font-size:1.15rem; margin-bottom:6px;}
+  .after-overlay p{font-size:0.82rem; color:#DADEE4; margin:0;}
+
+  .legend{max-width:1180px; margin:0 auto; display:grid; grid-template-columns:repeat(2,1fr); gap:32px;}
+  .legend-col h4{font-size:0.9rem; margin-bottom:14px;}
+  .legend-col.before h4{color:var(--red);}
+  .legend-col.after h4{color:var(--green);}
+  .legend-list{list-style:none; margin:0; padding:0; font-size:0.86rem; color:var(--muted);}
+  .legend-list li{display:flex; gap:10px; padding:7px 0; border-bottom:1px solid var(--line);}
+  .legend-list .num{
+    flex:none; width:20px; height:20px; border-radius:50%;
+    font-family:'JetBrains Mono'; font-size:0.62rem; font-weight:600;
+    display:flex; align-items:center; justify-content:center; color:var(--white);
+  }
+  .legend-col.before .num{background:var(--red);}
+  .legend-col.after .num{background:var(--green);}
+
+  /* ---------- comparison table ---------- */
+  .compare-table{width:100%; max-width:1180px; margin:0 auto; border-collapse:collapse; background:var(--white); border-radius:var(--radius-md); overflow:hidden; box-shadow:var(--shadow-card); border:1px solid var(--line);}
+  .compare-table th, .compare-table td{padding:16px 20px; text-align:left; font-size:0.9rem; border-bottom:1px solid var(--line);}
+  .compare-table th{font-family:'JetBrains Mono'; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); font-weight:500; background:#FAFAF8;}
+  .compare-table tr:last-child td{border-bottom:none;}
+  .compare-table td.before-cell{color:var(--red);}
+  .compare-table td.after-cell{color:var(--green); font-weight:600;}
+  .compare-table td.before-cell::before{content:"✕ "; }
+  .compare-table td.after-cell::before{content:"✓ "; }
+
+  /* ---------- fixes pillars ---------- */
+  .pillar-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px; max-width:1180px; margin:0 auto;}
+  .pillar-card{background:var(--white); border:1px solid var(--line); border-radius:var(--radius-md); padding:32px 26px; box-shadow:var(--shadow-card);}
+  .pillar-icon{width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; margin-bottom:20px;}
+  .pillar-card:nth-child(1) .pillar-icon{background:#FCEBD2;}
+  .pillar-card:nth-child(2) .pillar-icon{background:#DCEEEE;}
+  .pillar-card:nth-child(3) .pillar-icon{background:#FCEBD2;}
+  .pillar-card h3{font-size:1.1rem; margin-bottom:14px;}
+  .pillar-list{list-style:none; margin:0; padding:0; font-size:0.86rem; color:var(--muted);}
+  .pillar-list li{display:flex; gap:8px; padding:6px 0;}
+  .pillar-list li::before{content:"✓"; color:var(--green); font-weight:700; flex:none;}
+
+  /* ---------- offer ---------- */
+  .offer-band{background:var(--ink); color:var(--white); border-radius:var(--radius-lg); max-width:1180px; margin:0 auto; padding:64px 48px;}
+  .offer-inner{display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start;}
+  .offer-band h2{font-size:clamp(1.7rem,3vw,2.2rem); max-width:16ch;}
+  .offer-band .short{font-family:'JetBrains Mono', monospace; color:#FBD9A6; font-size:0.9rem; margin-top:14px;}
+  .offer-band p.lede{color:#C7CBD3; margin-top:18px; max-width:42ch;}
+  .offer-list{list-style:none; margin:24px 0 0; padding:0; font-size:0.92rem;}
+  .offer-list li{display:flex; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.1);}
+  .offer-list li::before{content:"✓"; color:var(--amber); font-weight:700; flex:none;}
+  .compliance-note{font-size:0.78rem; color:#9AA1AD; margin-top:20px; line-height:1.6;}
+  .offer-ctas{display:flex; gap:14px; margin-top:28px; flex-wrap:wrap;}
+
+  footer{background:var(--white); border-top:1px solid var(--line); padding:40px 32px; text-align:center;}
+  footer p{font-size:0.82rem; color:var(--muted); margin:0;}
+  footer a{color:var(--teal-deep); text-decoration:underline; font-weight:600;}
+
+  @media (max-width:900px){
+    .compare-grid{grid-template-columns:1fr;}
+    .legend{grid-template-columns:1fr;}
+    .pillar-grid{grid-template-columns:1fr;}
+    .offer-inner{grid-template-columns:1fr;}
+    .before-grid{grid-template-columns:repeat(3,1fr);}
+  }
+  @media (max-width:560px){
+    section{padding:64px 20px;}
+    .hero{padding:64px 20px 48px;}
+    .offer-band{padding:40px 24px;}
+    .before-grid{grid-template-columns:repeat(2,1fr);}
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<header>
+  <div class="header-inner">
+    <a href="#top" class="logo"><span class="logo-mark" aria-hidden="true"></span> Phoenix Securitas Tech</a>
+    <a class="btn btn-amber" href="https://tree.phoenixsecuritas.com">Get Your Site Audited</a>
+  </div>
+</header>
+
+<main id="main-content">
+
+<section class="hero" id="top">
+  <div class="wrap">
+    <span class="client-tag"><span class="dot" aria-hidden="true"></span> Case Study · Party-N-Jump, Copperas Cove TX</span>
+    <h1>Your ERS website should be as easy to use as your rentals are fun.</h1>
+    <p class="short-version">Same ERS system. Better website experience.</p>
+    <p class="lede">Party-N-Jump runs on Event Rental Systems (ERS) — a solid booking backend with a dated, hard-to-navigate front end. We rebuilt the customer-facing experience on top of it: no ERS migration, no lost bookings, just a site people can actually use.</p>
+  </div>
+</section>
+
+<section id="challenge">
+  <div class="section-head">
+    <span class="eyebrow">The starting point</span>
+    <h2>What we found on the live site</h2>
+    <p>party-n-jump.info, like most ERS storefronts, inherits the same handful of structural issues out of the box.</p>
+  </div>
+  <p class="audit-note">This audit is based on the live page's actual content and markup structure — not a visual crawl — so it reflects real information-architecture and accessibility issues rather than a claim about exact on-screen measurements.</p>
+  <div class="pillar-grid">
+    <div class="pillar-card">
+      <div class="pillar-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--amber-deep)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3.5v5c0 5-3.4 8.7-8 9.5-4.6-.8-8-4.5-8-9.5v-5L12 3z"/><path d="M12 8v5"/><circle cx="12" cy="15.5" r="0.6" fill="currentColor" stroke="none"/></svg>
+      </div>
+      <h3>Accessibility gaps</h3>
+      <ul class="pillar-list" style="color:var(--muted);">
+        <li style="list-style:none;"><span style="color:var(--red); font-weight:700;">✕</span>&nbsp; No skip-to-content link</li>
+        <li style="list-style:none;"><span style="color:var(--red); font-weight:700;">✕</span>&nbsp; No landmark structure (main/nav/footer)</li>
+        <li style="list-style:none;"><span style="color:var(--red); font-weight:700;">✕</span>&nbsp; Category images with no descriptive alt text</li>
+      </ul>
+    </div>
+    <div class="pillar-card">
+      <div class="pillar-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--teal-deep)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
+      </div>
+      <h3>Mobile friction</h3>
+      <ul class="pillar-list" style="color:var(--muted);">
+        <li style="list-style:none;"><span style="color:var(--red); font-weight:700;">✕</span>&nbsp; Header logo, phone and CTA repeated twice in the markup</li>
+        <li style="list-style:none;"><span style="color:var(--red); font-weight:700;">✕</span>&nbsp; 20+ nested nav links with no mobile-specific grouping</li>
+        <li style="list-style:none;"><span style="color:var(--red); font-weight:700;">✕</span>&nbsp; Deposit &amp; delivery policy buried in one paragraph</li>
+      </ul>
+    </div>
+    <div class="pillar-card">
+      <div class="pillar-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--amber-deep)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M8 4v5"/></svg>
+      </div>
+      <h3>Confusing UX</h3>
+      <ul class="pillar-list" style="color:var(--muted);">
+        <li style="list-style:none;"><span style="color:var(--red); font-weight:700;">✕</span>&nbsp; 18+ flat category tiles, no grouping or hierarchy</li>
+        <li style="list-style:none;"><span style="color:var(--red); font-weight:700;">✕</span>&nbsp; Full nav list repeated identically in the footer</li>
+        <li style="list-style:none;"><span style="color:var(--red); font-weight:700;">✕</span>&nbsp; No single, consistent path from browsing to booking</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="compare" style="background:var(--white); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="section-head">
+    <span class="eyebrow">Before &amp; after</span>
+    <h2>Same rentals. Rebuilt front end.</h2>
+    <p>The left panel recreates the live site's actual structure and content order. The right panel is our working homepage rebuild.</p>
+  </div>
+
+  <div class="compare-grid">
+    <div class="browser-frame">
+      <div class="browser-chrome" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+      <div class="frame-label before">Current site structure</div>
+      <div class="before-body">
+        <div class="before-row-dup">LOGO · PHONE · BOOK NOW <span class="issue-tag" style="position:static; display:inline-flex;">1</span></div>
+        <div class="before-row-dup">LOGO · PHONE · BOOK NOW <span style="color:#B0B0AA;">(repeated)</span></div>
+        <div class="before-links" style="position:relative;">
+          <span>Bounce Houses</span><span>Combo Bouncers</span><span>Water Bouncers</span>
+          <span>Water Slides</span><span>Dry Slides</span><span>Carnival Games</span>
+          <span>Interactive Games</span><span>Carnival Rides</span><span>+12 more…</span>
+          <span class="issue-tag" style="position:absolute; top:-6px; right:0;">2</span>
+        </div>
+        <div class="before-grid" style="position:relative;">
+          <div></div><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div>
+          <span class="issue-tag" style="position:absolute; top:40%; left:44%;">3</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="browser-frame">
+      <div class="browser-chrome" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+      <div class="frame-label after">Phoenix Securitas Tech rebuild</div>
+      <div class="after-body">
+        <img src="hero-poster.jpg" alt="" aria-hidden="true">
+        <div class="after-scrim" aria-hidden="true"></div>
+        <div class="after-overlay">
+          <span class="tag">Live interactive mockup</span>
+          <h4>Central Texas' premier party rental experience.</h4>
+          <p>One clear nav. One booking path. Fully keyboard and screen-reader accessible.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-col before">
+      <h4>What the numbers point to</h4>
+      <ul class="legend-list">
+        <li><span class="num">1</span> Header content (logo, phone, CTA) rendered twice — confusing for screen readers, wasted space on mobile</li>
+        <li><span class="num">2</span> Deeply nested category links with no visual or semantic grouping</li>
+        <li><span class="num">3</span> Flat image grid — no cards, no descriptions, no per-item call to action</li>
+      </ul>
+    </div>
+    <div class="legend-col after">
+      <h4>What replaced it</h4>
+      <ul class="legend-list">
+        <li><span class="num">✓</span> Single header, sticky, with one clear Book Now action</li>
+        <li><span class="num">✓</span> 5 organized categories instead of 20+ flat links</li>
+        <li><span class="num">✓</span> Structured cards with headings, descriptions and hierarchy</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="scorecard">
+  <div class="section-head">
+    <span class="eyebrow">Scorecard</span>
+    <h2>What changed, item by item</h2>
+  </div>
+  <table class="compare-table">
+    <thead>
+      <tr><th scope="col">Area</th><th scope="col">Before</th><th scope="col">After</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Skip-to-content link</td><td class="before-cell">Not present</td><td class="after-cell">Present</td></tr>
+      <tr><td>Mobile navigation</td><td class="before-cell">20+ flat links, no mobile pattern</td><td class="after-cell">Accessible dropdown menu</td></tr>
+      <tr><td>Focus indicators</td><td class="before-cell">Not verified in markup</td><td class="after-cell">Visible on every interactive element</td></tr>
+      <tr><td>Heading structure</td><td class="before-cell">Flat, image-led sections</td><td class="after-cell">Semantic H1–H3 hierarchy</td></tr>
+      <tr><td>Decorative vs. meaningful content</td><td class="before-cell">Not distinguished</td><td class="after-cell">Decorative icons hidden from screen readers</td></tr>
+      <tr><td>Reduced motion</td><td class="before-cell">Not supported</td><td class="after-cell">Respects prefers-reduced-motion</td></tr>
+      <tr><td>Category navigation</td><td class="before-cell">18+ ungrouped tiles</td><td class="after-cell">5 organized categories</td></tr>
+      <tr><td>Booking path</td><td class="before-cell">Scattered across the page</td><td class="after-cell">One consistent Book Now CTA</td></tr>
+      <tr><td>Header content</td><td class="before-cell">Duplicated in the markup</td><td class="after-cell">Single, sticky header</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="fixes" style="background:var(--white); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="section-head">
+    <span class="eyebrow">The work</span>
+    <h2>What we actually improved</h2>
+    <p>Organized the way we scope every ERS Accessibility &amp; UX Upgrade engagement.</p>
+  </div>
+  <div class="pillar-grid">
+    <div class="pillar-card">
+      <div class="pillar-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--amber-deep)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3.5v5c0 5-3.4 8.7-8 9.5-4.6-.8-8-4.5-8-9.5v-5L12 3z"/><path d="m9 12 2 2 4-4"/></svg>
+      </div>
+      <h3>WCAG accessibility</h3>
+      <ul class="pillar-list">
+        <li>Semantic heading order</li>
+        <li>Keyboard-accessible menus</li>
+        <li>Visible focus indicators</li>
+        <li>Verified color contrast</li>
+        <li>Screen-reader-friendly structure</li>
+      </ul>
+    </div>
+    <div class="pillar-card">
+      <div class="pillar-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--teal-deep)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
+      </div>
+      <h3>Mobile accessibility</h3>
+      <ul class="pillar-list">
+        <li>Large, easy-to-tap buttons</li>
+        <li>No horizontal scrolling</li>
+        <li>Simplified mobile navigation</li>
+        <li>One-tap call &amp; email actions</li>
+        <li>Fast, optimized images</li>
+      </ul>
+    </div>
+    <div class="pillar-card">
+      <div class="pillar-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--amber-deep)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M8 4v5"/></svg>
+      </div>
+      <h3>User-friendly design</h3>
+      <ul class="pillar-list">
+        <li>Fewer choices shown at once</li>
+        <li>Clear rental categories</li>
+        <li>Simple booking path</li>
+        <li>Strong visual hierarchy</li>
+        <li>Consistent buttons &amp; labels</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="offer">
+  <div class="offer-band">
+    <div class="offer-inner">
+      <div>
+        <span class="eyebrow" style="color:#FBD9A6;">The offer</span>
+        <h2>ERS Accessibility and UX Upgrade</h2>
+        <p class="short">Same ERS system. Better website experience.</p>
+        <p class="lede">We modernize Event Rental Systems websites to make them WCAG-conscious, mobile-accessible, and easier for customers to use — without replacing ERS.</p>
+        <div class="offer-ctas">
+          <a class="btn btn-amber" href="https://tree.phoenixsecuritas.com">Get Your Site Audited</a>
+          <a class="btn btn-outline-light" href="mailto:info@party-n-jump.com">See This Live Example</a>
+        </div>
+      </div>
+      <div>
+        <ul class="offer-list">
+          <li>Website usability audit</li>
+          <li>Mobile accessibility review</li>
+          <li>WCAG 2.2 AA-focused improvements</li>
+          <li>Navigation restructuring</li>
+          <li>Homepage redesign</li>
+          <li>Category organization</li>
+          <li>Booking-path improvements</li>
+          <li>Image and speed optimization</li>
+          <li>Keyboard and screen-reader testing</li>
+          <li>Responsive testing across common screen sizes</li>
+        </ul>
+        <p class="compliance-note">We build toward WCAG 2.2 Level AA and test for common accessibility barriers. This is not a guarantee of legal compliance or an "ADA-certified" claim — no such certification exists.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>Case study prepared by <a href="https://tree.phoenixsecuritas.com">Phoenix Securitas Tech</a> · Party-N-Jump rebuild is a working, unpublished mockup — not a live site.</p>
+</footer>
+
+</body>
+</html>
